@@ -286,7 +286,6 @@
     @media(hover:hover){
       .card:hover { transform:translateY(-7px) scale(1.028); box-shadow:0 20px 50px rgba(0,0,0,0.55),0 0 0 1px rgba(0,255,225,0.12); }
       .card:hover .card-img { transform:scale(1.08); }
-      .card:hover .card-cart-btn { opacity:1; transform:translateY(0); }
     }
     .card:active{transform:scale(0.96);}
     .card.selected{border-color:var(--neon);box-shadow:0 0 0 2px var(--neon),0 10px 40px rgba(0,255,225,0.25);}
@@ -319,8 +318,13 @@
       border-radius: 50%; background: rgba(0,255,225,0.15); border: 1px solid rgba(0,255,225,0.4);
       display: flex; align-items: center; justify-content: center; font-size: 14px;
       cursor: pointer; z-index: 5;
-      opacity: 0; transform: translateY(6px);
+      opacity: 1; transform: translateY(0);
       transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.2s;
+    }
+    /* Di desktop (hover capable): sembunyikan dulu, tampil saat hover */
+    @media(hover:hover){
+      .card-cart-btn { opacity: 0; transform: translateY(6px); }
+      .card:hover .card-cart-btn { opacity: 1; transform: translateY(0); }
     }
     .card-cart-btn:active { transform: scale(0.9) !important; background: rgba(0,255,225,0.3); }
 
@@ -801,6 +805,86 @@
     }
     @media(min-width:1200px){ .card-container{grid-template-columns:repeat(5,1fr);max-width:1100px;} .flash-grid{grid-template-columns:repeat(5,1fr);} .regular-grid{grid-template-columns:repeat(5,1fr);} }
     ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--bg1);}::-webkit-scrollbar-thumb{background:rgba(0,255,225,0.2);border-radius:2px;}
+
+    /* ══ FLYING CART ANIMATION ══ */
+    .cart-fly-dot{position:fixed;width:14px;height:14px;border-radius:50%;background:var(--neon);box-shadow:0 0 16px var(--neon);z-index:9999;pointer-events:none;transition:none;}
+    @keyframes cartFlyAnim{0%{opacity:1;transform:scale(1);}80%{opacity:1;}100%{opacity:0;transform:scale(0.3);}}
+
+    /* ══ WISHLIST BUTTON ══ */
+    .card-wish-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;z-index:6;transition:all 0.2s;}
+    .card-wish-btn:active{transform:scale(0.85);}
+    .card-wish-btn.active{background:rgba(255,77,109,0.3);border-color:rgba(255,77,109,0.6);}
+    .tab-icon-wish{font-size:20px;line-height:1;}
+
+    /* ══ WISHLIST PAGE ══ */
+    .wishlist-header{padding:28px 14px 0;max-width:600px;margin:0 auto;}
+    .wishlist-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--red);letter-spacing:3px;margin-bottom:4px;text-shadow:0 0 20px rgba(255,77,109,0.4);}
+    .wishlist-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.28);letter-spacing:1px;margin-bottom:20px;}
+    .wishlist-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px;max-width:700px;margin:14px auto 20px;}
+    @media(min-width:768px){.wishlist-grid{grid-template-columns:repeat(3,1fr);padding:0 32px;}}
+    .wishlist-empty{text-align:center;padding:60px 20px;color:rgba(255,77,109,0.3);font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;line-height:2.2;}
+
+    /* ══ PRODUK PREVIEW POPUP ══ */
+    #produkPreviewPopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(16px);z-index:700;justify-content:center;align-items:flex-end;}
+    .preview-box{background:rgba(7,21,32,0.99);border:1px solid rgba(0,255,225,0.2);border-radius:24px 24px 0 0;padding:0 0 36px;width:100%;max-width:480px;animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1);max-height:90vh;overflow-y:auto;}
+    .preview-img-wrap{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:24px 24px 0 0;}
+    .preview-img-wrap img{width:100%;height:100%;object-fit:cover;}
+    .preview-img-placeholder{width:100%;aspect-ratio:16/10;background:rgba(0,255,225,0.04);display:flex;align-items:center;justify-content:center;font-size:64px;border-radius:24px 24px 0 0;}
+    .preview-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+    .preview-body{padding:20px 20px 0;}
+    .preview-name{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;}
+    .preview-price-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .preview-price{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:var(--neon);text-shadow:var(--neon-glow);}
+    .preview-price-ori{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,0.3);text-decoration:line-through;}
+    .preview-badge{background:linear-gradient(135deg,#ff4d6d,#ff8c00);color:#fff;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;}
+    .preview-desc{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:14px;font-family:'Rajdhani',sans-serif;}
+    .preview-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+    .preview-meta-chip{padding:5px 12px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;}
+    .preview-meta-chip.stok{background:rgba(105,219,124,0.1);color:var(--green);border:1px solid rgba(105,219,124,0.25);}
+    .preview-meta-chip.sold{background:rgba(0,255,225,0.08);color:rgba(0,255,225,0.7);border:1px solid rgba(0,255,225,0.18);}
+    .preview-actions{display:flex;gap:10px;padding:0 20px;}
+    .btn-preview-beli{flex:2;padding:15px;background:linear-gradient(135deg,#00ffe1,#00b0a2);border:none;border-radius:12px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;color:#040c12;cursor:pointer;text-transform:uppercase;}
+    .btn-preview-cart{flex:1;padding:15px;background:rgba(0,255,225,0.08);border:1px solid rgba(0,255,225,0.3);border-radius:12px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--neon);cursor:pointer;text-transform:uppercase;letter-spacing:1px;}
+
+    /* ══ VOUCHER ══ */
+    .voucher-row{display:flex;gap:8px;margin-bottom:12px;}
+    .voucher-input{flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.25);border-radius:10px;padding:12px 14px;font-size:14px;font-family:'Share Tech Mono',monospace;color:#fff;outline:none;transition:border-color 0.3s;text-transform:uppercase;letter-spacing:2px;}
+    .voucher-input:focus{border-color:rgba(255,215,0,0.6);}
+    .voucher-input::placeholder{text-transform:none;letter-spacing:0;font-size:13px;color:rgba(255,255,255,0.25);}
+    .btn-voucher{padding:12px 14px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:10px;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;color:var(--yellow);cursor:pointer;white-space:nowrap;text-transform:uppercase;}
+    .voucher-badge{display:none;align-items:center;gap:8px;background:rgba(105,219,124,0.1);border:1px solid rgba(105,219,124,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green);}
+    .voucher-badge.visible{display:flex;}
+    .btn-voucher-remove{background:transparent;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:16px;margin-left:auto;}
+    .voucher-settings-card .voucher-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+    .voucher-item{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:10px 14px;}
+    .voucher-item-code{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);letter-spacing:2px;}
+    .voucher-item-info{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);}
+    .btn-del-voucher{background:transparent;border:none;color:var(--red);cursor:pointer;font-size:14px;}
+    .voucher-add-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    .voucher-add-row input{flex:1;min-width:80px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:9px 12px;font-size:12px;font-family:'Share Tech Mono',monospace;color:#fff;outline:none;text-transform:uppercase;}
+    .voucher-add-row input::placeholder{text-transform:none;color:rgba(255,255,255,0.2);}
+    .btn-add-voucher{padding:9px 14px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.3);border-radius:8px;font-family:'Orbitron',sans-serif;font-size:9px;color:var(--yellow);cursor:pointer;white-space:nowrap;text-transform:uppercase;}
+
+    /* ══ VOUCHER HINT (untuk pembeli) ══ */
+    .voucher-hint-toggle{display:flex;align-items:center;gap:6px;margin-bottom:8px;cursor:pointer;width:fit-content;}
+    .voucher-hint-toggle span{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,215,0,0.55);letter-spacing:1px;text-decoration:underline dotted;transition:color 0.2s;}
+    .voucher-hint-toggle:hover span{color:rgba(255,215,0,0.9);}
+    .voucher-hint-box{display:none;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;animation:fadeUp 0.25s ease;}
+    .voucher-hint-box.visible{display:block;}
+    .voucher-hint-title{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,215,0,0.4);text-transform:uppercase;margin-bottom:8px;}
+    .voucher-hint-list{display:flex;flex-direction:column;gap:6px;}
+    .voucher-hint-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px 12px;cursor:pointer;transition:background 0.2s;}
+    .voucher-hint-item:active{background:rgba(255,215,0,0.1);}
+    .voucher-hint-code{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--yellow);letter-spacing:2px;}
+    .voucher-hint-info{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);}
+    .voucher-hint-tap{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(0,255,225,0.4);white-space:nowrap;}
+    .voucher-hint-empty{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25);text-align:center;padding:8px 0;letter-spacing:1px;}
+
+    /* ══ ADMIN DATE FILTER ══ */
+    .date-filter-wrap{display:flex;gap:8px;align-items:center;padding:8px 14px 4px;max-width:700px;margin:0 auto;flex-wrap:wrap;}
+    .date-filter-input{background:rgba(0,0,0,0.3);border:1px solid rgba(0,255,225,0.16);border-radius:8px;padding:7px 12px;font-family:'Share Tech Mono',monospace;font-size:12px;color:#fff;outline:none;cursor:pointer;color-scheme:dark;}
+    .btn-clear-date{padding:7px 12px;background:transparent;border:1px solid rgba(255,77,109,0.25);border-radius:8px;font-family:'Orbitron',sans-serif;font-size:8px;color:var(--red);cursor:pointer;text-transform:uppercase;white-space:nowrap;}
+    @media(min-width:768px){.date-filter-wrap{padding:8px 32px 4px;max-width:900px;}}
   </style>
 </head>
 <body>
@@ -898,6 +982,25 @@
         <span id="selectedPriceTag" style="font-size:12px;opacity:0.65;"></span>
       </div>
       <div class="input-row"><label class="input-label">Username Fishit</label><input type="text" class="input-field" id="username" placeholder="Masukkan username..."></div>
+
+      <div class="voucher-row">
+        <input type="text" class="voucher-input" id="voucherInput" placeholder="Punya kode voucher? (opsional)">
+        <button class="btn-voucher" onclick="applyVoucher()">🎟 Pakai</button>
+      </div>
+      <div id="voucherHintWrap">
+        <div class="voucher-hint-toggle" onclick="toggleVoucherHint()">
+          <span>🏷 Lihat voucher tersedia</span>
+          <span id="voucherHintArrow" style="font-size:10px;color:rgba(255,215,0,0.4);transition:transform 0.25s;display:inline-block">▼</span>
+        </div>
+        <div class="voucher-hint-box" id="voucherHintBox">
+          <div class="voucher-hint-title">🎟 Voucher Aktif — Tap untuk pakai</div>
+          <div class="voucher-hint-list" id="voucherHintList"></div>
+        </div>
+      </div>
+      <div class="voucher-badge" id="voucherBadge">
+        <span>🎟</span><span id="voucherBadgeText">—</span>
+        <button class="btn-voucher-remove" onclick="removeVoucher()">✕</button>
+      </div>
       <div class="input-row">
         <label class="input-label">Metode Pembayaran</label>
         <select class="input-field" id="metode">
@@ -1081,6 +1184,13 @@
       <button class="filter-tab" onclick="setFilter('BERHASIL',this)">✓ Berhasil</button>
       <button class="filter-tab" onclick="setFilter('GAGAL',this)">✕ Gagal</button>
     </div>
+    <div class="date-filter-wrap">
+      <span style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(0,255,225,0.4);">📅 DARI</span>
+      <input type="date" class="date-filter-input" id="dateFrom" onchange="renderOrders()">
+      <span style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(0,255,225,0.4);">S/D</span>
+      <input type="date" class="date-filter-input" id="dateTo" onchange="renderOrders()">
+      <button class="btn-clear-date" onclick="clearDateFilter()">✕ Reset</button>
+    </div>
     <div class="admin-toolbar">
       <div class="live-badge" id="liveBadge" style="display:none"><div class="live-dot"></div> LIVE</div>
       <div class="admin-action-btns">
@@ -1102,11 +1212,24 @@
           <span class="toggle-label">Tampilkan promo banner</span>
           <label class="toggle-switch"><input type="checkbox" id="promoToggle" checked onchange="savePromoSettings()"><span class="toggle-slider"></span></label>
         </div>
-        <div class="input-row"><label class="input-label">Durasi Countdown (jam)</label><input type="number" class="input-field" id="promoDuration" value="24" min="1" max="168" onchange="savePromoSettings()"></div>
+        <div class="input-row"><label class="input-label">Durasi Countdown</label><div style="display:flex;gap:8px;"><input type="number" class="input-field" id="promoDuration" value="24" min="1" style="flex:1" onchange="savePromoSettings()"><select class="input-field" id="promoDurationUnit" style="width:100px" onchange="savePromoSettings()"><option value="menit">Menit</option><option value="jam" selected>Jam</option><option value="hari">Hari</option></select></div></div>
         <div class="input-row"><label class="input-label">Label Promo</label><input type="text" class="input-field" id="promoLabel" value="Flash Sale!" placeholder="Flash Sale! / Promo Spesial..." onchange="savePromoSettings()"></div>
       </div>
-      <div class="settings-card">
-        <div class="settings-title">💬 Template Pesan WhatsApp</div>
+      <div class="settings-card voucher-settings-card">
+        <div class="settings-title">🎟 Kelola Voucher Diskon</div>
+        <div class="tpl-hint">Buat kode voucher untuk pembeli. Diskon dihitung dari total belanja.</div>
+        <div class="promo-toggle-row" style="margin-bottom:12px;">
+          <span class="toggle-label" style="font-size:12px;">Tampilkan daftar voucher ke pembeli</span>
+          <label class="toggle-switch"><input type="checkbox" id="voucherVisibleToggle" checked onchange="saveVoucherVisibility()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="voucher-add-row">
+          <input type="text" id="vcCode" placeholder="Kode (misal: HEMAT10)" maxlength="20">
+          <input type="number" id="vcDiskon" placeholder="Diskon %" min="1" max="99" style="max-width:90px">
+          <input type="number" id="vcMin" placeholder="Min. belanja" style="max-width:110px">
+          <button class="btn-add-voucher" onclick="addVoucher()">✚ Tambah</button>
+        </div>
+        <div class="voucher-list" id="voucherAdminList"></div>
+      </div>
         <div class="tpl-hint">Variabel yang tersedia:<br>{ID} = ID Order · {USER} = Username<br>{PRODUK} = Nama Produk · {JML} = Jumlah<br>{TOTAL} = Total Bayar · {METODE} = Metode Bayar</div>
         <textarea class="wa-tpl-input" id="waTplInput">Halo Admin, saya mau beli:
 
@@ -1191,9 +1314,45 @@ Terimakasih sudah order di NEOSTORE ⚡</textarea>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- ═══ WISHLIST PAGE ═══ -->
+<div class="page" id="page-wishlist">
+  <div class="wishlist-header">
+    <div class="wishlist-title">❤️ Wishlist</div>
+    <div class="wishlist-sub">// produk favorit kamu</div>
+  </div>
+  <div class="wishlist-grid" id="wishlistGrid">
+    <div style="grid-column:1/-1" class="wishlist-empty">❤️<br>Belum ada produk favorit.<br><span style="font-size:11px">Tap 🤍 di kartu produk untuk menyimpan.</span></div>
+  </div>
+</div>
+
+<!-- PRODUK PREVIEW POPUP -->
+<div id="produkPreviewPopup">
+  <div class="preview-box">
+    <div class="preview-img-wrap" id="previewImgWrap">
+      <button class="preview-close" onclick="closePreview()">✕</button>
+    </div>
+    <div class="preview-body">
+      <div class="preview-name" id="previewName">—</div>
+      <div class="preview-price-row">
+        <div class="preview-price" id="previewPrice">Rp0</div>
+        <div class="preview-price-ori" id="previewPriceOri" style="display:none"></div>
+        <div class="preview-badge" id="previewBadge" style="display:none"></div>
+      </div>
+      <div class="preview-meta">
+        <div class="preview-meta-chip stok" id="previewStok"></div>
+        <div class="preview-meta-chip sold" id="previewSold" style="display:none"></div>
+      </div>
+      <div class="preview-desc" id="previewDesc"></div>
+    </div>
+    <div class="preview-actions">
+      <button class="btn-preview-cart" id="btnPreviewCart" onclick="previewAddCart()">🛒 Keranjang</button>
+      <button class="btn-preview-beli" id="btnPreviewBeli" onclick="previewBeli()">⚡ BELI SEKARANG</button>
+    </div>
+  </div>
+</div>
 <nav class="bottom-nav">
   <button class="bottom-tab active" id="tabStore" onclick="showPage('store')"><div class="tab-icon">🛒</div><div class="tab-label">Store</div></button>
+  <button class="bottom-tab" id="tabWishlist" onclick="showPage('wishlist')"><div class="tab-icon">❤️</div><div class="tab-label">Wishlist</div><div class="tab-badge" id="wlBadge" style="display:none">0</div></button>
   <button class="bottom-tab" id="tabTesti" onclick="showPage('testi')"><div class="tab-icon">💬</div><div class="tab-label">Ulasan</div></button>
   <button class="bottom-tab" id="tabRiwayat" onclick="showPage('riwayat')" style="position:relative"><div class="tab-icon">📋</div><div class="tab-label">Riwayat</div><div class="tab-badge" id="rwBadge" style="display:none">0</div></button>
 </nav>
@@ -1282,15 +1441,33 @@ function launchKonfeti(){
 }
 
 // ════ COUNTDOWN ════
+async function resetFlashSaleProduks(){
+  if(!fbReady||!window._fb)return;
+  const{db,doc,updateDoc}=window._fb;
+  const promoList=allProduks.filter(p=>p.isPromo);
+  for(const p of promoList){
+    await updateDoc(doc(db,'produks',p.docId),{isPromo:false,diskon:0});
+  }
+  if(promoList.length>0)showToast('⏰ Flash Sale berakhir! Harga produk kembali normal.');
+}
+
 function startCountdown(){
   if(countdownInterval) clearInterval(countdownInterval);
-  const dur=(parseInt(document.getElementById('promoDuration')?.value)||24)*3600*1000;
+  const durVal=parseInt(document.getElementById('promoDuration')?.value)||24;
+  const durUnit=document.getElementById('promoDurationUnit')?.value||'jam';
+  const multiplier=durUnit==='menit'?60000:durUnit==='hari'?86400000:3600000;
+  const dur=durVal*multiplier;
   const saved=localStorage.getItem('neo_countdown_end');
   if(saved&&Date.now()<parseInt(saved)){countdownTarget=parseInt(saved);}
   else{countdownTarget=Date.now()+dur;localStorage.setItem('neo_countdown_end',countdownTarget);}
   countdownInterval=setInterval(()=>{
     const diff=countdownTarget-Date.now();
-    if(diff<=0){clearInterval(countdownInterval);document.getElementById('promoBanner').style.display='none';return;}
+    if(diff<=0){
+      clearInterval(countdownInterval);
+      document.getElementById('promoBanner').style.display='none';
+      resetFlashSaleProduks();
+      return;
+    }
     const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
     document.getElementById('cdH').textContent=String(h).padStart(2,'0');
     document.getElementById('cdM').textContent=String(m).padStart(2,'0');
@@ -1348,6 +1525,8 @@ function savePromoSettings(){
   document.getElementById('promoBanner').style.display=show?'block':'none';
   const lbl=document.getElementById('promoLabel')?.value||'Flash Sale!';
   const lblEl=document.getElementById('promoTextLabel');if(lblEl)lblEl.textContent=lbl;
+  // Reset countdown agar durasi baru langsung berlaku
+  localStorage.removeItem('neo_countdown_end');
   startCountdown();
 }
 
@@ -1601,9 +1780,14 @@ function renderChart(){
   const max=Math.max(...data.map(d=>d.count),1);
   container.innerHTML=data.map(d=>`<div class="chart-bar-wrap"><div class="chart-bar-val">${d.count||''}</div><div class="chart-bar" style="height:${(d.count/max)*80+2}px"></div><div class="chart-bar-lbl">${d.label}</div></div>`).join('');
 }
+function clearDateFilter(){document.getElementById('dateFrom').value='';document.getElementById('dateTo').value='';renderOrders();}
 function renderOrders(){
   const list=document.getElementById('ordersList');
   let orders=currentFilter==='semua'?allOrders:allOrders.filter(o=>o.status===currentFilter);
+  const fromVal=document.getElementById('dateFrom')?.value;
+  const toVal=document.getElementById('dateTo')?.value;
+  if(fromVal){const from=new Date(fromVal);orders=orders.filter(o=>{if(!o.timestamp)return true;return new Date(o.timestamp)>=from;});}
+  if(toVal){const to=new Date(toVal);to.setHours(23,59,59,999);orders=orders.filter(o=>{if(!o.timestamp)return true;return new Date(o.timestamp)<=to;});}
   if(!orders.length){list.innerHTML=`<div class="empty-state">[ BELUM ADA ORDER ]</div>`;return;}
   const icons={BERHASIL:'✓',PENDING:'⏳',GAGAL:'✕'};
   list.innerHTML=orders.map((o,i)=>{
@@ -1649,14 +1833,61 @@ function kirimBalas(inputId,user,orderId){
 }
 async function updateStatusFB(docId,status){const{db,doc,updateDoc}=window._fb;await updateDoc(doc(db,'orders',docId),{status});}
 async function deleteOrderFB(docId){const{db,doc,deleteDoc}=window._fb;await deleteDoc(doc(db,'orders',docId));}
-async function adminConfirm(docId){await updateStatusFB(docId,'BERHASIL');showToast('✓ Order dikonfirmasi!');launchKonfeti();}
-async function adminReject(docId){await updateStatusFB(docId,'GAGAL');showToast('✕ Order ditolak.');}
+async function adminConfirm(docId){
+  const o=allOrders.find(x=>x.docId===docId);
+  if(!o)return;
+  const{db,doc,updateDoc}=window._fb;
+  await updateDoc(doc(db,'orders',docId),{status:'BERHASIL'});
+  // ✅ Update sold saat dikonfirmasi
+  const produkItems=o.cartItems||[{docId:allProduks.find(p=>p.nama===o.produk)?.docId,qty:o.jumlah||1,nama:o.produk}];
+  for(const item of produkItems){
+    const p=allProduks.find(x=>x.docId===item.docId||x.nama===item.nama);
+    if(p){await updateDoc(doc(db,'produks',p.docId),{sold:(p.sold||0)+(item.qty||1)});}
+  }
+  showToast('✓ Order dikonfirmasi!');launchKonfeti();
+}
+async function adminReject(docId){
+  const o=allOrders.find(x=>x.docId===docId);
+  if(!o)return;
+  const{db,doc,updateDoc}=window._fb;
+  await updateDoc(doc(db,'orders',docId),{status:'GAGAL'});
+  // ✅ Kembalikan stok saat order ditolak
+  const produkItems=o.cartItems||[{docId:allProduks.find(p=>p.nama===o.produk)?.docId,qty:o.jumlah||1,nama:o.produk}];
+  for(const item of produkItems){
+    const p=allProduks.find(x=>x.docId===item.docId||x.nama===item.nama);
+    if(p&&p.stok!==-1&&p.stok!==undefined){
+      await updateDoc(doc(db,'produks',p.docId),{stok:p.stok+(item.qty||1)});
+    }
+  }
+  showToast('✕ Order ditolak. Stok dikembalikan.');
+  // Notif WA ke pembeli
+  if(o.nomorHP){
+    const msg=`Halo ${o.username}.\n\nMaaf, order kamu *DITOLAK* oleh Admin NEOSTORE ❌\n\n🔑 ID: ${o.id}\n📦 Produk: ${o.produk}\n\nSilakan hubungi admin untuk informasi lebih lanjut.`;
+    setTimeout(()=>window.open('https://wa.me/'+o.nomorHP.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank'),500);
+  }
+}
 async function clearAllOrders(){if(!confirm('Hapus semua order?'))return;for(const o of allOrders)await deleteOrderFB(o.docId);showToast('🗑 Semua order dihapus.');}
 function exportToExcel(data,filename){
   try{
-    const rows=data.map(o=>({'ID':o.id||'','Username':o.username||'','Produk':o.produk||'','Jumlah':o.jumlah||1,'Total':o.total||0,'Metode':o.metode||'','Status':o.status||'','Waktu':o.waktu||''}));
+    const rows=data.map(o=>({'ID':o.id||'','Username':o.username||'','Nomor HP':o.nomorHP||'','Produk':o.produk||'','Jumlah':o.jumlah||1,'Total':o.total||0,'Voucher':o.voucherKode||'','Diskon Voucher':o.voucherDiskon||0,'Metode':o.metode||'','Status':o.status||'','Waktu':o.waktu||''}));
     const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Orders');XLSX.writeFile(wb,`${filename}_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
+    XLSX.utils.book_append_sheet(wb,ws,'Orders');
+    // Sheet terlaris per produk
+    const produkMap={};
+    data.filter(o=>o.status==='BERHASIL').forEach(o=>{
+      const nama=o.produk||'Unknown';
+      if(!produkMap[nama])produkMap[nama]={produk:nama,totalTerjual:0,totalOmzet:0,jumlahOrder:0};
+      produkMap[nama].totalTerjual+=(o.jumlah||1);
+      produkMap[nama].totalOmzet+=(o.total||0);
+      produkMap[nama].jumlahOrder++;
+    });
+    const totalOmzet=Object.values(produkMap).reduce((s,p)=>s+p.totalOmzet,0);
+    const terlarisList=Object.values(produkMap).sort((a,b)=>b.totalTerjual-a.totalTerjual).map(p=>({
+      'Produk':p.produk,'Total Terjual (pcs)':p.totalTerjual,'Total Omzet':p.totalOmzet,
+      'Jumlah Order':p.jumlahOrder,'% dari Total Omzet':totalOmzet?Math.round(p.totalOmzet/totalOmzet*100)+'%':'0%'
+    }));
+    if(terlarisList.length){const wsTerlaris=XLSX.utils.json_to_sheet(terlarisList);XLSX.utils.book_append_sheet(wb,wsTerlaris,'Terlaris per Produk');}
+    XLSX.writeFile(wb,`${filename}_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
     showToast('✓ File Excel berhasil diunduh!');
   }catch(e){showToast('⚠ Gagal export: '+e.message);}
 }
@@ -1717,8 +1948,9 @@ function buildCardHTML(p, realIdx){
     <span class="card-select-badge">✓</span>
     ${saleBadge}
     ${isPromo?stokBadge:''}
-    <button class="card-cart-btn" onclick="event.stopPropagation();addToCart(${realIdx})" title="Tambah ke keranjang">🛒</button>
-    <div class="card-content">
+    <button class="card-wish-btn${isInWishlist(p.docId)?' active':''}" onclick="event.stopPropagation();toggleWishlist(${realIdx},this)" title="Wishlist">${isInWishlist(p.docId)?'❤️':'🤍'}</button>
+    <button class="card-cart-btn" onclick="event.stopPropagation();flyCartAnim(this);addToCart(${realIdx})" title="Tambah ke keranjang">🛒</button>
+    <div class="card-content" onclick="event.stopPropagation();openPreview(${realIdx})" style="cursor:pointer">
       <div class="card-name">${p.nama||'—'}</div>
       ${hargaHtml}
       ${soldTxt?`<div class="card-sold">👥 ${soldTxt}</div>`:''}
@@ -1889,12 +2121,15 @@ async function deleteProduk(docId,nama){
 function updateTotal(){
   const j=parseInt(document.getElementById('jumlah').value)||1;
   if(dataOrder.isCart)return;
-  const h=dataOrder.harga||0,t=j*h;dataOrder.total=t;dataOrder.jumlah=j;
+  const h=dataOrder.harga||0;let t=j*h;
+  let voucherInfo='';
+  if(activeVoucher){const disc=Math.round(t*activeVoucher.diskon/100);t=t-disc;voucherInfo=`\nVoucher : <span style="color:var(--yellow)">-${activeVoucher.diskon}% (hemat Rp${disc.toLocaleString('id-ID')})</span>`;}
+  dataOrder.total=t;dataOrder.jumlah=j;
   document.getElementById('totalBox').textContent='Rp'+t.toLocaleString('id-ID');
   if(dataOrder.produk){
     const sb=document.getElementById('summaryBox');sb.classList.add('visible');
     const diskonInfo=dataOrder.isPromo&&dataOrder.diskon?`\nHarga Asli : <span style="text-decoration:line-through;opacity:0.5">Rp${(dataOrder.hargaOri||0).toLocaleString('id-ID')}</span> <span style="color:var(--red)">(-${dataOrder.diskon}%)</span>`:'';
-    sb.innerHTML=`<strong style="color:var(--neon);font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px">RINGKASAN</strong><br><br>Produk : <strong style="color:#fff">${dataOrder.produk}${dataOrder.isPromo?' 🔥':''}</strong><br>${diskonInfo?diskonInfo+'<br>':''}Harga &nbsp;: Rp${h.toLocaleString('id-ID')}<br>Jumlah : ${j} pcs<br>Total &nbsp;: <strong style="color:var(--neon)">Rp${t.toLocaleString('id-ID')}</strong>`;
+    sb.innerHTML=`<strong style="color:var(--neon);font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px">RINGKASAN</strong><br><br>Produk : <strong style="color:#fff">${dataOrder.produk}${dataOrder.isPromo?' 🔥':''}</strong><br>${diskonInfo?diskonInfo+'<br>':''}Harga &nbsp;: Rp${h.toLocaleString('id-ID')}<br>Jumlah : ${j} pcs${voucherInfo}<br>Total &nbsp;: <strong style="color:var(--neon)">Rp${t.toLocaleString('id-ID')}</strong>`;
     document.getElementById('idPembayaranBox').textContent='🔑 '+dataOrder.id;
   }
 }
@@ -1907,13 +2142,26 @@ async function submitOrder(){
   if(!dataOrder.id)dataOrder.id=generateId();
   dataOrder.username=username;
   if(!dataOrder.isCart){dataOrder.jumlah=parseInt(document.getElementById('jumlah').value)||1;dataOrder.total=dataOrder.jumlah*dataOrder.harga;}
+  // Terapkan voucher ke total
+  if(activeVoucher){
+    const disc=Math.round(dataOrder.total*activeVoucher.diskon/100);
+    dataOrder.voucherKode=activeVoucher.kode;dataOrder.voucherDiskon=disc;
+    dataOrder.total=dataOrder.total-disc;
+  }
   dataOrder.metode=metode;dataOrder.status='PENDING';dataOrder.waktu=new Date().toLocaleString('id-ID');
   const btn=document.getElementById('btnOrder');btn.disabled=true;btn.textContent='MENYIMPAN...';
   try{
     if(fbReady&&window._fb){
-      const{ordersRef,addDoc}=window._fb;
+      const{ordersRef,addDoc,db,doc,updateDoc}=window._fb;
       await addDoc(ordersRef,{...dataOrder,timestamp:Date.now()});
-      if(selectedProduk){const{db,doc,updateDoc}=window._fb;await updateDoc(doc(db,'produks',selectedProduk.docId),{sold:(selectedProduk.sold||0)+dataOrder.jumlah});}
+      // ✅ Kurangi stok saat order masuk (PENDING) — cegah oversell
+      const produkItems=dataOrder.isCart?dataOrder.cartItems:[{docId:allProduks.find(p=>p.nama===dataOrder.produk)?.docId,qty:dataOrder.jumlah,nama:dataOrder.produk}];
+      for(const item of produkItems||[]){
+        const p=allProduks.find(x=>x.docId===item.docId||x.nama===item.nama);
+        if(p&&p.stok!==-1&&p.stok!==undefined&&p.stok>0){
+          await updateDoc(doc(db,'produks',p.docId),{stok:Math.max(0,p.stok-(item.qty||1))});
+        }
+      }
       saveToRiwayat({...dataOrder});showToast('✓ Order berhasil! Upload bukti bayar 📎');
     }else{saveToRiwayat({...dataOrder});showToast('✓ Order tersimpan! Upload bukti bayar.');}
   }catch(e){showToast('⚠ '+e.message);}
@@ -2015,9 +2263,11 @@ function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById('tabStore').classList.toggle('active',page==='store');
+  document.getElementById('tabWishlist').classList.toggle('active',page==='wishlist');
   document.getElementById('tabTesti').classList.toggle('active',page==='testi');
   document.getElementById('tabRiwayat').classList.toggle('active',page==='riwayat');
   if(page==='riwayat')renderRiwayat();
+  if(page==='wishlist')renderWishlist();
 }
 function switchAdminTab(tab){
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
@@ -2048,6 +2298,193 @@ if(dz){
   dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))handleFileSelect({target:{files:[f]}});});
 }
 function showToast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.transition='opacity 0.4s';t.style.opacity='0';setTimeout(()=>t.remove(),400);},3500);}
+
+// ════════════════════════════════════════════════
+// ✅ FITUR BARU
+// ════════════════════════════════════════════════
+
+// ── 1. FLYING CART ANIMATION ──
+function flyCartAnim(btn){
+  const btnRect=btn.getBoundingClientRect();
+  const cartBtn=document.querySelector('.nav-cart-btn');
+  if(!cartBtn)return;
+  const cartRect=cartBtn.getBoundingClientRect();
+  const dot=document.createElement('div');dot.className='cart-fly-dot';
+  dot.style.cssText=`left:${btnRect.left+btnRect.width/2}px;top:${btnRect.top+btnRect.height/2}px;`;
+  document.body.appendChild(dot);
+  const startX=btnRect.left+btnRect.width/2,startY=btnRect.top+btnRect.height/2;
+  const endX=cartRect.left+cartRect.width/2,endY=cartRect.top+cartRect.height/2;
+  const duration=600;const start=performance.now();
+  function step(now){
+    const t=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-t,3);
+    const x=startX+(endX-startX)*ease;
+    const y=startY+(endY-startY)*ease-Math.sin(t*Math.PI)*80;
+    const scale=1-t*0.5;
+    dot.style.left=x+'px';dot.style.top=y+'px';
+    dot.style.transform=`translate(-50%,-50%) scale(${scale})`;
+    dot.style.opacity=t>0.8?(1-(t-0.8)*5):1;
+    if(t<1)requestAnimationFrame(step);
+    else{dot.remove();cartBtn.style.transform='scale(1.4)';setTimeout(()=>cartBtn.style.transform='',200);}
+  }
+  requestAnimationFrame(step);
+}
+
+// ── 2. WISHLIST ──
+const WL_KEY='neo_wishlist';
+function getWishlist(){try{return JSON.parse(localStorage.getItem(WL_KEY)||'[]');}catch{return[];}}
+function saveWishlist(list){localStorage.setItem(WL_KEY,JSON.stringify(list));updateWlBadge();}
+function isInWishlist(docId){return getWishlist().includes(docId);}
+function toggleWishlist(idx,btn){
+  const p=allProduks[idx];if(!p)return;
+  let list=getWishlist();
+  if(list.includes(p.docId)){list=list.filter(id=>id!==p.docId);showToast('💔 Dihapus dari wishlist');btn.textContent='🤍';btn.classList.remove('active');}
+  else{list.push(p.docId);showToast('❤️ Ditambah ke wishlist!');btn.textContent='❤️';btn.classList.add('active');}
+  saveWishlist(list);
+}
+function updateWlBadge(){
+  const count=getWishlist().length;const badge=document.getElementById('wlBadge');
+  badge.style.display=count>0?'flex':'none';badge.textContent=count;
+}
+function renderWishlist(){
+  const list=getWishlist();const grid=document.getElementById('wishlistGrid');
+  const items=allProduks.filter(p=>list.includes(p.docId));
+  if(!items.length){grid.innerHTML='<div style="grid-column:1/-1" class="wishlist-empty">❤️<br>Belum ada produk favorit.<br><span style="font-size:11px">Tap 🤍 di kartu produk untuk menyimpan.</span></div>';return;}
+  grid.innerHTML=items.map(p=>{
+    const realIdx=allProduks.findIndex(x=>x.docId===p.docId);
+    const isPromo=!!p.isPromo,diskon=p.diskon||0;
+    const harga=isPromo&&diskon>0?Math.round(p.harga*(1-diskon/100)):p.harga;
+    return`<div class="card" onclick="showPage('store');setTimeout(()=>selectProdukDynamic(${realIdx}),200);" style="cursor:pointer">
+      ${p.gambar?`<div class="card-img" style="background-image:url('${p.gambar}')"></div>`:'<div class="card-img" style="background:rgba(255,77,109,0.05);display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>'}
+      <div class="card-overlay"></div>
+      <button class="card-wish-btn active" onclick="event.stopPropagation();toggleWishlistByDocId('${p.docId}',this)">❤️</button>
+      <div class="card-content">
+        <div class="card-name">${p.nama}</div>
+        <div class="card-price">${isPromo?`<span class="card-price-ori">Rp${p.harga.toLocaleString('id-ID')}</span><div class="card-price sale">Rp${harga.toLocaleString('id-ID')}</div>`:`Rp${harga.toLocaleString('id-ID')}`}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleWishlistByDocId(docId,btn){
+  let list=getWishlist();list=list.filter(id=>id!==docId);saveWishlist(list);
+  showToast('💔 Dihapus dari wishlist');renderWishlist();
+}
+
+// ── 3. PREVIEW PRODUK ──
+let previewIdx=null;
+function openPreview(idx){
+  const p=allProduks[idx];if(!p)return;previewIdx=idx;
+  const wrap=document.getElementById('previewImgWrap');
+  // Hapus img/placeholder lama
+  wrap.querySelectorAll('img,div.preview-img-placeholder').forEach(el=>el.remove());
+  if(p.gambar){const img=document.createElement('img');img.src=p.gambar;img.alt=p.nama;wrap.insertBefore(img,wrap.firstChild);}
+  else{const ph=document.createElement('div');ph.className='preview-img-placeholder';ph.textContent='📦';wrap.insertBefore(ph,wrap.firstChild);}
+  document.getElementById('previewName').textContent=p.nama||'—';
+  const isPromo=!!p.isPromo,diskon=p.diskon||0;
+  const hargaDiskon=isPromo&&diskon>0?Math.round(p.harga*(1-diskon/100)):p.harga;
+  document.getElementById('previewPrice').textContent='Rp'+hargaDiskon.toLocaleString('id-ID');
+  const oriEl=document.getElementById('previewPriceOri'),badgeEl=document.getElementById('previewBadge');
+  if(isPromo&&diskon>0){oriEl.textContent='Rp'+p.harga.toLocaleString('id-ID');oriEl.style.display='';badgeEl.textContent=`-${diskon}%`;badgeEl.style.display='';}
+  else{oriEl.style.display='none';badgeEl.style.display='none';}
+  const stok=p.stok===-1||p.stok===undefined?'∞ Tidak terbatas':p.stok===0?'Habis':p.stok+' tersisa';
+  document.getElementById('previewStok').textContent='📦 Stok: '+stok;
+  const soldEl=document.getElementById('previewSold');
+  if(p.sold){soldEl.textContent='👥 '+p.sold+' terjual';soldEl.style.display='';}else soldEl.style.display='none';
+  document.getElementById('previewDesc').textContent=p.deskripsi||'Tidak ada deskripsi.';
+  document.getElementById('produkPreviewPopup').style.display='flex';
+}
+function closePreview(){document.getElementById('produkPreviewPopup').style.display='none';previewIdx=null;}
+function previewBeli(){if(previewIdx===null)return;closePreview();selectProdukDynamic(previewIdx);}
+function previewAddCart(){if(previewIdx===null)return;addToCart(previewIdx);closePreview();}
+
+// ── 4. VOUCHER ──
+const VOUCHER_KEY='neo_vouchers';
+let activeVoucher=null;
+function getVouchers(){try{return JSON.parse(localStorage.getItem(VOUCHER_KEY)||'[]');}catch{return[];}}
+function saveVouchers(list){localStorage.setItem(VOUCHER_KEY,JSON.stringify(list));renderVoucherAdmin();}
+function applyVoucher(){
+  const kode=document.getElementById('voucherInput').value.trim().toUpperCase();
+  if(!kode){showToast('⚠ Masukkan kode voucher!');return;}
+  const vouchers=getVouchers();const v=vouchers.find(x=>x.kode===kode);
+  if(!v){showToast('✕ Kode voucher tidak valid!');return;}
+  const total=dataOrder.total||0;
+  if(v.minBelanja&&total<v.minBelanja){showToast(`⚠ Min. belanja Rp${v.minBelanja.toLocaleString('id-ID')} untuk voucher ini!`);return;}
+  activeVoucher=v;
+  const disc=Math.round(total*(v.diskon/100));
+  document.getElementById('voucherBadge').classList.add('visible');
+  document.getElementById('voucherBadgeText').textContent=`${v.kode} — diskon ${v.diskon}% (hemat Rp${disc.toLocaleString('id-ID')})`;
+  updateTotal();showToast(`✓ Voucher ${v.kode} aktif! Diskon ${v.diskon}%`);
+}
+function removeVoucher(){activeVoucher=null;document.getElementById('voucherBadge').classList.remove('visible');document.getElementById('voucherInput').value='';updateTotal();showToast('Voucher dihapus.');}
+function addVoucher(){
+  const kode=document.getElementById('vcCode').value.trim().toUpperCase();
+  const diskon=parseInt(document.getElementById('vcDiskon').value)||0;
+  const minBelanja=parseInt(document.getElementById('vcMin').value)||0;
+  if(!kode){showToast('⚠ Masukkan kode voucher!');return;}
+  if(!diskon||diskon<1||diskon>99){showToast('⚠ Diskon harus 1–99%!');return;}
+  const list=getVouchers();if(list.find(v=>v.kode===kode)){showToast('⚠ Kode sudah ada!');return;}
+  list.push({kode,diskon,minBelanja});saveVouchers(list);
+  document.getElementById('vcCode').value='';document.getElementById('vcDiskon').value='';document.getElementById('vcMin').value='';
+  showToast(`✓ Voucher ${kode} ditambahkan!`);
+}
+function deleteVoucher(kode){let list=getVouchers();list=list.filter(v=>v.kode!==kode);saveVouchers(list);showToast(`🗑 Voucher ${kode} dihapus.`);}
+function renderVoucherAdmin(){
+  const el=document.getElementById('voucherAdminList');if(!el)return;
+  const list=getVouchers();
+  if(!list.length){el.innerHTML='<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,255,255,0.2);padding:10px 0;letter-spacing:1px">Belum ada voucher. Tambah di atas.</div>';return;}
+  el.innerHTML=list.map(v=>`<div class="voucher-item">
+    <div><div class="voucher-item-code">${v.kode}</div><div class="voucher-item-info">Diskon ${v.diskon}%${v.minBelanja?' · Min Rp'+v.minBelanja.toLocaleString('id-ID'):''}</div></div>
+    <button class="btn-del-voucher" onclick="deleteVoucher('${v.kode}')">🗑</button>
+  </div>`).join('');
+}
+
+// ── 5. VOUCHER HINT UNTUK PEMBELI ──
+const VOUCHER_VISIBLE_KEY='neo_voucher_visible';
+function saveVoucherVisibility(){
+  const show=document.getElementById('voucherVisibleToggle')?.checked;
+  localStorage.setItem(VOUCHER_VISIBLE_KEY, show?'1':'0');
+  updateVoucherHintWrap();
+}
+function updateVoucherHintWrap(){
+  const show=localStorage.getItem(VOUCHER_VISIBLE_KEY)!=='0';
+  const wrap=document.getElementById('voucherHintWrap');
+  if(wrap)wrap.style.display=show?'':'none';
+  const toggle=document.getElementById('voucherVisibleToggle');
+  if(toggle)toggle.checked=show;
+}
+function toggleVoucherHint(){
+  const box=document.getElementById('voucherHintBox');
+  const arrow=document.getElementById('voucherHintArrow');
+  const visible=box.classList.toggle('visible');
+  arrow.style.transform=visible?'rotate(180deg)':'';
+  if(visible)renderVoucherHint();
+}
+function renderVoucherHint(){
+  const list=document.getElementById('voucherHintList');if(!list)return;
+  const vouchers=getVouchers();
+  if(!vouchers.length){list.innerHTML='<div class="voucher-hint-empty">Belum ada voucher tersedia.</div>';return;}
+  list.innerHTML=vouchers.map(v=>`
+    <div class="voucher-hint-item" onclick="pasteVoucher('${v.kode}')">
+      <div>
+        <div class="voucher-hint-code">${v.kode}</div>
+        <div class="voucher-hint-info">Diskon ${v.diskon}%${v.minBelanja?' · Min Rp'+v.minBelanja.toLocaleString('id-ID'):''}</div>
+      </div>
+      <div class="voucher-hint-tap">⬆ Pakai</div>
+    </div>`).join('');
+}
+function pasteVoucher(kode){
+  const input=document.getElementById('voucherInput');
+  if(input){input.value=kode;input.focus();}
+  // tutup hint box
+  document.getElementById('voucherHintBox').classList.remove('visible');
+  document.getElementById('voucherHintArrow').style.transform='';
+  applyVoucher();
+}
+
+// Init
+updateWlBadge();
+renderVoucherAdmin();
+updateVoucherHintWrap();
 document.getElementById('jumlah').addEventListener('input',updateTotal);
 updateRwBadge();checkNotifPermission();
 </script>
